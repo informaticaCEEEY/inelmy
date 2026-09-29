@@ -1,1 +1,39 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
+
+@font-face {
+    font-family: 'Panton';
+    src: url('../fonts/Panton-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url('../fonts/Panton-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Panton';
+    src: url('../fonts/Panton-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bs-body-font-family: 'Panton', sans-serif;
+}
+
+:root {
+    --inelmy-guinda: #970E48;
+    --inelmy-dorado: #C2995C;
+    --inelmy-oscuro: #000005;
+}
+
+body {
+    font-family: 'Panton', sans-serif;
+}

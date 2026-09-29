@@ -1,0 +1,206 @@
+.login-page {
+    font-family: 'Panton', sans-serif;
+    min-height: calc(100vh - 0px);
+    background: #f7f7f8;
+}
+
+.login-container {
+    min-height: 100vh;
+}
+
+/* Panel institucional */
+.login-brand {
+    background: var(--inelmy-guinda);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.login-brand::before {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border: 1px solid rgba(194, 153, 92, .45);
+    border-radius: 50%;
+    top: -180px;
+    left: -180px;
+}
+
+.login-brand::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border: 1px solid rgba(194, 153, 92, .25);
+    border-radius: 50%;
+    bottom: -280px;
+    right: -250px;
+}
+
+.brand-content {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+    padding: 3rem;
+}
+
+.brand-line {
+    width: 70px;
+    height: 4px;
+    background: var(--inelmy-dorado);
+    margin-bottom: 2rem;
+}
+
+.brand-name {
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    margin-bottom: 1rem;
+}
+
+.brand-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+}
+
+.brand-description {
+    font-size: 1rem;
+    line-height: 1.7;
+    opacity: .85;
+    max-width: 450px;
+}
+
+/* Panel formulario */
+.login-form-panel {
+    background: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 430px;
+}
+
+.login-header {
+    margin-bottom: 2.5rem;
+}
+
+.login-header h1 {
+    color: var(--inelmy-oscuro);
+    font-weight: 700;
+    margin-bottom: .5rem;
+}
+
+.login-header p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.form-label {
+    color: var(--inelmy-oscuro);
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+.form-control {
+    min-height: 48px;
+    border: 1px solid #d8d8dc;
+    border-radius: 6px;
+    padding: .7rem .85rem;
+}
+
+.form-control:focus {
+    border-color: var(--inelmy-guinda);
+    box-shadow: 0 0 0 .2rem rgba(151, 14, 72, .12);
+}
+
+.form-check-input:checked {
+    background-color: var(--inelmy-guinda);
+    border-color: var(--inelmy-guinda);
+}
+
+.form-check-input:focus {
+    border-color: var(--inelmy-guinda);
+    box-shadow: 0 0 0 .2rem rgba(151, 14, 72, .12);
+}
+
+.btn-inelmy {
+    min-height: 48px;
+    background: var(--inelmy-guinda);
+    border: 1px solid var(--inelmy-guinda);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all .2s ease;
+}
+
+.btn-inelmy:hover {
+    background: #7f0c3d;
+    border-color: #7f0c3d;
+    color: #fff;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eeeeee;
+    text-align: center;
+    font-size: .85rem;
+    color: #777;
+}
+
+.login-footer span {
+    color: var(--inelmy-dorado);
+}
+
+.alert-danger {
+    border-radius: 6px;
+    font-size: .9rem;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+
+    .login-brand {
+        min-height: auto;
+        padding: 3rem 1.5rem;
+    }
+
+    .brand-content {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .brand-line {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .brand-name {
+        font-size: 2.5rem;
+    }
+
+    .brand-title {
+        font-size: 1.2rem;
+    }
+
+    .brand-description {
+        display: none;
+    }
+
+    .login-form-panel {
+        min-height: auto;
+        padding: 3rem 1.5rem;
+    }
+}
