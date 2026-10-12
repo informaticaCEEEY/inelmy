@@ -1,0 +1,89 @@
+.navbar-inelmy {
+    background-color: #fff;
+    border-bottom: 3px solid #b52b5c;
+    min-height: 72px;
+}
+
+.navbar-inelmy .navbar-brand {
+    padding: 0;
+    margin-right: 30px;
+}
+
+.navbar-inelmy .nav-link {
+    color: #222;
+    font-weight: 700;
+    padding: 0.75rem 0.9rem !important;
+    transition: color 0.2s ease;
+}
+
+.navbar-inelmy .nav-link:hover {
+    color: #b52b5c;
+}
+
+.navbar-inelmy .nav-link.active {
+    color: #b52b5c;
+}
+
+.navbar-inelmy .dropdown-toggle {
+    color: #333;
+    font-weight: 600;
+}
+
+.navbar-inelmy .dropdown-toggle:hover {
+    color: #b52b5c;
+}
+
+.logo-segey {
+    height: 52px;
+    width: auto;
+    display: block;
+}
+
+/* =========================================================
+   NAVBAR RESPONSIVE
+========================================================= */
+
+.navbar-toggler {
+    border: 0;
+    padding: 0.4rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+@media (max-width: 991.98px) {
+
+    .navbar-inelmy {
+        min-height: 68px;
+    }
+
+    .logo-segey {
+        height: 46px;
+    }
+
+    .navbar-collapse {
+        padding: 0.75rem 0 0.5rem;
+    }
+
+    .navbar-inelmy .nav-link {
+        padding: 0.7rem 0.5rem !important;
+    }
+
+    .navbar-inelmy .navbar-nav {
+        border-top: 1px solid #eeeeee;
+        padding-top: 0.5rem;
+    }
+
+    .navbar-inelmy .navbar-nav:last-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .navbar-inelmy .dropdown-menu {
+        border: 0;
+        box-shadow: none;
+        padding-left: 0.75rem;
+    }
+
+}

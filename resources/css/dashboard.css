@@ -1,0 +1,173 @@
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-page {
+    min-height: calc(100vh - 72px);
+    background-color: #f7f8fa;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1d1d1d;
+}
+
+.dashboard-header p {
+    margin: 0.35rem 0 0;
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   TARJETAS
+========================================================= */
+
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background-color: #f8e8ee;
+    color: #b52b5c;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.35rem;
+}
+
+.dashboard-card h5 {
+    margin: 0 0 0.5rem;
+    font-weight: 800;
+    color: #222;
+}
+
+.dashboard-card p {
+    margin: 0 0 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.dashboard-card-link {
+    color: #b52b5c;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.dashboard-card-link:hover {
+    color: #8f2047;
+}
+
+.dashboard-card-link i {
+    margin-left: 0.25rem;
+}
+
+
+/* =========================================================
+   PANELES
+========================================================= */
+
+.dashboard-panel {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.dashboard-panel-header h5 {
+    margin: 0;
+    font-weight: 800;
+}
+
+.dashboard-panel-header p {
+    margin: 0.25rem 0 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+
+.dashboard-empty {
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    color: #6c757d;
+}
+
+.dashboard-empty i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    color: #b52b5c;
+}
+
+.dashboard-empty p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   USUARIO
+========================================================= */
+
+.user-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #f8e8ee;
+    color: #b52b5c;
+
+    font-size: 1.25rem;
+}
+
+.user-summary strong {
+    display: block;
+    font-weight: 800;
+}
+
+.user-summary span {
+    display: block;
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+}

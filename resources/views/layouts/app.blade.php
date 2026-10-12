@@ -7,7 +7,7 @@
         <title>
             @yield('title', 'INELMY')
         </title>
-
+        <link rel="icon" type="image/png" href="{{ asset('images/favicon_2024_2030.png') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
 
