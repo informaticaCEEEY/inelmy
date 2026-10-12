@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('recurso_version', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('recurso_id')
+                ->constrained('recurso')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreignId('tipo_recurso_id')
+                ->constrained('tipo_recurso')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreignId('estatus_version_id')
+                ->constrained('estatus_version')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->string('titulo', 200);
+            $table->integer('version')->unsigned();
+            $table->string('url_contenido', 200);
+            $table->text('transcripcion');
+            $table->timestamps();
+            $table->unique(['recurso_id', 'version']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('recurso_version');
+    }
+};
