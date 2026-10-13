@@ -37,8 +37,8 @@ return new class extends Migration
                 ->restrictOnDelete();
             $table->unsignedInteger('version');
             $table->text('enunciado');
-            $table->timestamps();
             $table->unique(['pregunta_id', 'version']);
+            $table->timestamps();
         });
     }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->text('descripcion')->nullable();
             $table->decimal('puntaje', 5, 2)->unsigned();
+            $table->unique(['rubrica_criterio_id', 'nombre']);
             $table->timestamps();
         });
     }

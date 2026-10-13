@@ -20,6 +20,7 @@ return new class extends Migration
                 ->restrictOnDelete();
             $table->string('nombre', 250);
             $table->decimal('peso', 5, 2)->unsigned();
+            $table->unique(['rubrica_id', 'nombre']);
             $table->timestamps();
         });
     }

@@ -26,11 +26,11 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->restrictOnDelete();
             $table->string('titulo', 200);
-            $table->integer('version')->unsigned();
+            $table->unsignedInteger('version');
             $table->string('url_contenido', 200);
             $table->text('transcripcion');
-            $table->timestamps();
             $table->unique(['recurso_id', 'version']);
+            $table->timestamps();
         });
     }
 
