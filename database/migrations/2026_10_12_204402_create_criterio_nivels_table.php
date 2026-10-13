@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('criterio_nivel', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rubrica_criterio_id')
-                ->nullable()
                 ->constrained('rubrica_criterio')
                 ->onUpdate('cascade')
                 ->restrictOnDelete();

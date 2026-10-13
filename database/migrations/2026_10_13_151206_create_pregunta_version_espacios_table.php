@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('respuesta_esperada');
             $table->decimal('puntaje', 5, 2)->unsigned();
             $table->timestamps();
+
+            $table->unique(['id', 'pregunta_version_id'], 'espacio_id_pregunta_unique');
         });
     }
 
