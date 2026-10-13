@@ -16,15 +16,15 @@ return new class extends Migration
             $table->foreignId('recurso_id')
                 ->constrained('recurso')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->restrictOnDelete();
             $table->foreignId('tipo_recurso_id')
                 ->constrained('tipo_recurso')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->restrictOnDelete();
             $table->foreignId('estatus_version_id')
                 ->constrained('estatus_version')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->restrictOnDelete();
             $table->string('titulo', 200);
             $table->integer('version')->unsigned();
             $table->string('url_contenido', 200);
