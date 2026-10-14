@@ -17,7 +17,8 @@ class Respuesta extends Model
      */
     protected $table = 'respuesta';
     protected $fillable = ['aplicacion_sustentante_id', 'pregunta_version_id', 'opcion_respuesta_id',
-        'evaluador_id', 'estado_calificacion_id', 'url_audio', 'es_correcta', 'calificacion', 'fecha_calificacion'];
+        'evaluador_id', 'estado_calificacion_id', 'contenido_respuesta', 'url_audio',
+        'es_correcta', 'calificacion', 'fecha_calificacion'];
 
     public function aplicacionSustentante(): BelongsTo
     {
