@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('alias', 50)->unique();
             $table->text('descripcion')->nullable();
-            $table->boolean('activo')->default(true);
+            $table->boolean('activo')->default(1);
             $table->timestamps();
         });
     }

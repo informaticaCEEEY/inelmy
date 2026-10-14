@@ -19,7 +19,7 @@ return new class extends Migration
                 ->restrictOnDelete();
             $table->text('contenido');
             $table->unsignedBigInteger('orden');
-            $table->boolean('es_correcta')->default('false');
+            $table->boolean('es_correcta');
             $table->timestamps();
 
             $table->unique(['id', 'pregunta_version_id'], 'opcion_id_pregunta_unique');

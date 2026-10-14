@@ -23,12 +23,14 @@ return new class extends Migration
 
             $table->unique(['respuesta_id', 'pregunta_version_espacio_id'], 'respuesta_espacio_unica');
 
-            $table->foreign(['respuesta_id', 'pregunta_version_id'])
+            $table->foreign(['respuesta_id', 'pregunta_version_id'],
+                'respuesta_espacio_respuesta_pregunta_foreign')
                 ->references(['id', 'pregunta_version_id'])
                 ->on('respuesta')
                 ->onUpdate('cascade')->restrictOnDelete();
 
-                $table->foreign(['pregunta_version_espacio_id', 'pregunta_version_id'])
+                $table->foreign(['pregunta_version_espacio_id', 'pregunta_version_id'],
+                'respuesta_espacio_espacio_pregunta_foreign')
                 ->references(['id', 'pregunta_version_id'])
                 ->on('pregunta_version_espacio')
                 ->onUpdate('cascade')->restrictOnDelete();

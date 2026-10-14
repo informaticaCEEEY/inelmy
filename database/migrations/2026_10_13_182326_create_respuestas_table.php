@@ -31,6 +31,7 @@ return new class extends Migration
                 ->constrained('estado_calificacion')
                 ->onUpdate('cascade')
                 ->restrictOnDelete();
+            $table->text('contenido_respuesta')->nullable();
             $table->string('url_audio', 200)->nullable();
             $table->boolean('es_correcta')->nullable();
             $table->decimal('calificacion', 5, 2)->nullable();
@@ -44,7 +45,7 @@ return new class extends Migration
             $table->foreign(['opcion_respuesta_id', 'pregunta_version_id'])
                 ->references(['id', 'pregunta_version_id'])
                 ->on('opcion_respuesta')
-                ->onUpdate('cascade')->restrictOnDelete();
+                ->restrictOnUpdate()->restrictOnDelete();
         });
     }
 
