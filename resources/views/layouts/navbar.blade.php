@@ -17,12 +17,29 @@
         <div class="collapse navbar-collapse" id="navbarPrincipal">
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                {{-- Inicio --}}
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        Inicio
-                    </a>
-                </li>
+                @can('dashboard.ver')
+                    {{-- Inicio --}}
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            Inicio
+                        </a>
+                    </li>
+                @endcan
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>
+                            Catalogos
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}"
+                                    href="{{ route('usuarios.index') }}">Usuarios</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
                 {{-- Aplicaciones --}}
                 <li class="nav-item">
                     <a class="nav-link" href="#">Aplicaciones</a>
