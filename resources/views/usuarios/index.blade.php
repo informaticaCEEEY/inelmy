@@ -5,6 +5,7 @@
     @vite('resources/css/navbar.css')
     @vite('resources/css/dashboard.css')
     @vite('resources/css/datatable.css')
+    @vite('resources/css/filtros-datatables.css')
     <link href="https://cdn.datatables.net/v/dt/dt-2.3.7/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-BRRIJxYmCe3t9liG1Pi7Ufg2cB0SZg0eK/gaUhI/taUrJ4eHZJDmI7kkUm343vK3" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css" rel="stylesheet">
@@ -41,6 +42,22 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label>Roles</label>
+                        <select id="filtro_rol" class="form-control filtro"></select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-9">
+                        <div id="filtros_activos"></div>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button id="btn_limpiar_filtros" class="btn btn-outline-secondary btn-sm">
+                            Limpiar filtros
+                        </button>
+                    </div>
+                </div>
                 <table id="tabla-usuario" class="display">
                     <thead>
                         <tr>
@@ -140,6 +157,7 @@
                                 <div class="col-12 col-md-6">
                                     <label for="celular" class="form-label">
                                         Celular
+                                        <span class="text-danger">*</span>
                                     </label>
 
                                     <input type="tel" id="celular" name="celular" class="form-control"
@@ -322,8 +340,19 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
     @vite('resources/js/functions.js')
+    @vite('resources/js/filtros-datatables.js')
     {{-- Inicialización de DataTables --}}
     <script>
+
+        let modoFormulario = 'crear';
+
+        const filtrosTabla = [
+            { id: '#filtro_rol', nombre: 'Rol' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            window.actualizarBadges(filtrosTabla);
+        });
 
         function mostrarUsuario(usuario) {
             window.limpiarErrores('#form-usuario');
@@ -340,6 +369,41 @@
         }
 
         $(document).ready(function () {
+
+            $('#btn_limpiar_filtros').on('click', function () {
+                window.limpiarFiltros(filtrosTabla, table);
+            });
+
+            $('#filtro_rol').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Selecciona el rol',
+                allowClear: true,
+                ajax: {
+                    url: "{{ route('filtros.roles') }}",
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.roles,
+                            pagination: {
+                                more: data.more
+                            }
+                        };
+                    }
+                }
+            });
 
             var table = $('#tabla-usuario').DataTable({
                 processing: true,
@@ -419,6 +483,11 @@
                     [4, 'asc'],
                     [1, 'asc'],
                 ],
+            });
+
+            $('.filtro').on('change', function () {
+                table.ajax.reload();
+                window.actualizarBadges(filtrosTabla);
             });
 
             //Función para llenar formulario de edición

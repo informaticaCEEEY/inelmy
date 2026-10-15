@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\FiltrosController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,3 +42,8 @@ Route::middleware(['auth', 'verified','permission:usuarios.editar',])->group(fun
 Route::delete('/eliminarUsuario', [UsuarioController::class, 'destroy'])
     ->middleware(['auth', 'verified', 'permission:usuarios.eliminar'])
     ->name('usuario.eliminar');
+
+Route::group(['middleware' => ['auth', 'verified']], function () {
+
+    Route::get('filtros/roles', [FiltrosController::class, 'roles'])->name('filtros.roles');
+});
