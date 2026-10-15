@@ -28,14 +28,14 @@
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i>
+                            <i class="bi bi-card-list"></i>
                             Catalogos
                         </a>
-
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <a class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}"
-                                    href="{{ route('usuarios.index') }}">Usuarios</a>
+                                <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
+                                    Usuarios
+                                </a>
                             </li>
                         </ul>
                     </li>

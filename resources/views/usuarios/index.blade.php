@@ -4,6 +4,7 @@
 @push('styles')
     @vite('resources/css/navbar.css')
     @vite('resources/css/dashboard.css')
+    @vite('resources/css/datatable.css')
     <link href="https://cdn.datatables.net/v/dt/dt-2.3.7/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-BRRIJxYmCe3t9liG1Pi7Ufg2cB0SZg0eK/gaUhI/taUrJ4eHZJDmI7kkUm343vK3" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css" rel="stylesheet">
@@ -26,6 +27,15 @@
                 Administración de usuarios y sus roles en INELMY.
             </p>
         </div>
+
+        @if (Route::has('usuario.crear'))
+            @can('usuarios.crear')
+                <button class="btn btn-inelmy" onclick="window.agregarRegistro('#form-usuario', '#formUsuarioModal')">
+                    <i class="bi bi-person-plus me-1"></i>
+                    Nuevo usuario
+                </button>
+            @endcan
+        @endif
     </div>
     {{-- Tabla de usuarios --}}
     <div class="card border-0 shadow-sm">
@@ -47,53 +57,250 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="modal fade modal-lg" id="formUsuarioModal" tabindex="-1" role="dialog" aria-labelledby="formUsuarioModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content ">
-                        <div class="modal-header">
-                            <div class="col-11 d-block">
-                                <h5 class="modal-title text-center" id="formUsuarioModalLabel"><span id="labelForm">Agregar</span> Usuario</h5>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="form-usuario" method="post">
-                                @csrf
-                            </form>
-                        </div>
-                        <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" form="form-usuario">Guardar</button>
-                        </div>
+</div>
+<div class="container">
+    <div class="row">
+        {{-- Modal para agregar y editar usuarios --}}
+        <div class="modal fade modal-inelmy" id="formUsuarioModal" tabindex="-1"
+            aria-labelledby="formUsuarioModalLabel" aria-hidden="true">
+
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+                <div class="modal-content">
+
+                    {{-- Encabezado --}}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="formUsuarioModalLabel">
+                            <i class="bi bi-person-plus me-2"></i>
+                            <span id="labelForm">Agregar</span> usuario
+                        </h5>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
+
+                    {{-- Formulario --}}
+                    <form id="form-usuario" method="POST">
+                        @csrf
+                        <input type="hidden" id="edit-id" name="id">
+
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                {{-- Nombre --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="nombre" class="form-label">
+                                        Nombre <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="text" id="nombre" name="nombre" class="form-control"
+                                        placeholder="Ingrese el nombre" aria-describedby="error-nombre" required>
+
+                                    <div id="error-nombre" class="invalid-feedback" data-error-for="nombre"></div>
+                                </div>
+
+                                {{-- Primer apellido --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="primer_apellido" class="form-label">
+                                        Primer apellido
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="text" id="primer_apellido" name="primer_apellido"
+                                        class="form-control" placeholder="Ingrese el primer apellido"
+                                         aria-describedby="error-primer-apellido" required>
+
+                                    <div id="error-primer-apellido" class="invalid-feedback" data-error-for="primer-apellido"></div>
+                                </div>
+
+                                {{-- Segundo apellido --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="segundo_apellido" class="form-label">
+                                        Segundo apellido
+                                    </label>
+
+                                    <input type="text" id="segundo_apellido" name="segundo_apellido"
+                                        class="form-control" placeholder="Ingrese el segundo apellido"
+                                        aria-describedby="error-segundo-apellido">
+
+                                    <div id="error-segundo-apellido" class="invalid-feedback" data-error-for="segundo-apellido"></div>
+                                </div>
+
+                                {{-- CURP --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="curp" class="form-label">
+                                        CURP
+                                    </label>
+
+                                    <input type="text" id="curp" name="curp" class="form-control text-uppercase"
+                                        placeholder="Ingrese la CURP" maxlength="18" aria-describedby="error-curp">
+
+                                    <div id="error-curp" class="invalid-feedback" data-error-for="curp"></div>
+                                </div>
+
+                                {{-- Celular --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="celular" class="form-label">
+                                        Celular
+                                    </label>
+
+                                    <input type="tel" id="celular" name="celular" class="form-control"
+                                        placeholder="Ingrese el celular" maxlength="10"
+                                        aria-describedby="error-celular" required>
+
+                                    <div id="error-celular" class="invalid-feedback" data-error-for="celular"></div>
+                                </div>
+
+                                {{-- Correo --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="email" class="form-label">
+                                        Correo electrónico
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="email" id="email" name="email"
+                                        class="form-control" placeholder="ejemplo@correo.com"
+                                        aria-describedby="error-email" required>
+
+                                    <div id="error-email" class="invalid-feedback" data-error-for="email"></div>
+                                </div>
+
+                                {{-- Contraseña --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="password" class="form-label">
+                                        Contraseña
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="password" id="password" name="password"
+                                        class="form-control" aria-describedby="error-password">
+
+                                    <div id="error-password" class="invalid-feedback" data-error-for="password"></div>
+                                </div>
+
+                                {{-- Confirmar Contraseña --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="password_confirmation" class="form-label">
+                                        Confirmar Contraseña
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="password" id="password_confirmation" name="password_confirmation"
+                                        class="form-control" aria-describedby="error-password-confirmation">
+
+                                    <div id="error-password-confirmation" class="invalid-feedback" data-error-for="password-confirmation"></div>
+                                </div>
+
+                                {{-- Rol --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="role_id" class="form-label">
+                                        Rol
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <select class="form-select" name="role_id" id="role_id" required>
+                                        <option value="">Seleccione un rol</option>
+                                        @foreach ($roles as $rol)
+                                            <option value="{{ $rol->id }}">{{ $rol->name }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    <div id="error-role-id" class="invalid-feedback" data-error-for="role-id"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Pie del modal --}}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" class="btn btn-primary" id="btnGuardarUsuario">
+                                <i class="bi bi-check-lg me-1"></i> Guardar usuario
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="modal fade modal-lg" id="formPasswordModal" tabindex="-1" role="dialog" aria-labelledby="formPasswordModal" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content ">
-                        <div class="modal-header">
-                            <div class="col-11 d-block">
-                                <h5 class="modal-title text-center" id="formPasswordModal">Cambiar Contraseña</h5>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="form-password" method="post">
-                                @csrf
-                            </form>
-                        </div>
-                        <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" form="form-password">Guardar</button>
-                        </div>
+        </div>
+
+        {{-- Modal para actualizar contraseña --}}
+        <div class="modal fade modal-inelmy" id="formPasswordModal" tabindex="-1"
+            aria-labelledby="formPasswordModal" aria-hidden="true">
+
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+                <div class="modal-content">
+
+                    {{-- Encabezado --}}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="formPasswordModal">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Actualizar contraseña
+                        </h5>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
+
+                    {{-- Formulario --}}
+                    <form id="form-usuario" method="POST">
+                        @csrf
+                        <input type="hidden" id="edit-id" name="id">
+
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                {{-- Nombre --}}
+                                <div class="col-12 col-md-12">
+                                    <label for="nombre_completo" class="form-label">
+                                        Nombre
+                                    </label>
+
+                                    <input type="text" id="nombre_completo" name="nombre_completo" class="form-control"
+                                        placeholder="Ingrese el nombre" aria-describedby="error-nombre-completo" disabled>
+                                </div>
+
+                                {{-- Contraseña --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="password" class="form-label">
+                                        Contraseña
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="password" id="password" name="password"
+                                        class="form-control" aria-describedby="error-password">
+
+                                    <div id="error-password" class="invalid-feedback" data-error-for="password"></div>
+                                </div>
+
+                                {{-- Confirmar Contraseña --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="password_confirmation" class="form-label">
+                                        Confirmar Contraseña
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="password" id="password_confirmation" name="password_confirmation"
+                                        class="form-control" aria-describedby="error-password-confirmation">
+
+                                    <div id="error-password-confirmation" class="invalid-feedback" data-error-for="password-confirmation"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Pie del modal --}}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" class="btn btn-primary" id="btnActualizarPassword">
+                                <i class="bi bi-check-lg me-1"></i> Actualizar contraseña
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 @endsection
@@ -114,12 +321,25 @@
     {{-- Select2, solo si lo utilizas --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
-
+    @vite('resources/js/functions.js')
     {{-- Inicialización de DataTables --}}
     <script>
-        $(document).ready(function () {
 
-            console.log('DataTables:', typeof $.fn.DataTable);
+        function mostrarUsuario(usuario) {
+            window.limpiarErrores('#form-usuario');
+            $('#labelForm').html('Editar');
+
+            $('#edit-id').val(usuario.id);
+            $('#nombre').val(usuario.nombre);
+            $('#primer_apellido').val(usuario.primer_apellido);
+            $('#segundo_apellido').val(usuario.segundo_apellido);
+            $('#curp').val(usuario.curp);
+            $('#celular').val(usuario.celular);
+            $('#email').val(usuario.email);
+            window.mostrarSelect2('#role_id', usuario.roles[0].id, usuario.roles[0].name);
+        }
+
+        $(document).ready(function () {
 
             var table = $('#tabla-usuario').DataTable({
                 processing: true,
@@ -200,6 +420,340 @@
                     [1, 'asc'],
                 ],
             });
+
+            //Función para llenar formulario de edición
+            $(document).on('click', '.edit-btn', function () {
+                modoFormulario = 'editar';
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '{{ route('usuario.buscar') }}',
+                    method: 'post',
+                    data: {
+                        id: id
+                    },
+                    cache: false,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.status == 200) {
+
+                            let usuario = response.usuario;
+                            mostrarUsuario(usuario);
+                            window.limpiarErrores('#form-usuario');
+                            $('#formUsuarioModal').modal('show');
+                        }
+                        if(response.status == 404){
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Usuario no encontrada!",
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
+                        // Errores de validación de Laravel.
+                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+
+                            const errores = xhr.responseJSON.errors;
+
+                            $.each(errores, function (campo, mensajes) {
+
+                                // Encontrar el input por su atributo name.
+                                const $input = $form.find(':input').filter(function () {
+                                    return this.name === campo;
+                                });
+
+                                // Encontrar el contenedor de error correspondiente.
+                                const $contenedor = $form.find('[data-error-for]').filter(function () {
+                                    return $(this).attr('data-error-for') === campo;
+                                });
+
+                                $input.addClass('is-invalid');
+
+                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                            });
+
+                            // Enfocar el primer campo inválido.
+                            $form.find('.is-invalid').first().trigger('focus');
+
+                            return;
+                        }
+
+                        // Errores distintos de validación.
+                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
+
+                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    }
+                });
+            });
+
+            //Función para llenar formulario de cambio de contraseña
+            $(document).on('click', '.password-btn', function () {
+                modoFormulario = 'editar';
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '{{ route('usuario.buscar') }}',
+                    method: 'post',
+                    data: {
+                        id: id
+                    },
+                    cache: false,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.status == 200) {
+                            let usuario = response.usuario;
+                            $('#password-id').val(usuario.id);
+                            let nombre_completo = usuario.primer_apellido.concat(" ", usuario.segundo_apellido, " ", usuario.nombre);
+                            $('#nombre_completo').val(nombre_completo);
+                            $('#formPasswordModal').modal('show');
+                        }
+                        if(response.status == 404){
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Usuario no encontrado!",
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
+                        // Errores de validación de Laravel.
+                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+
+                            const errores = xhr.responseJSON.errors;
+
+                            $.each(errores, function (campo, mensajes) {
+
+                                // Encontrar el input por su atributo name.
+                                const $input = $form.find(':input').filter(function () {
+                                    return this.name === campo;
+                                });
+
+                                // Encontrar el contenedor de error correspondiente.
+                                const $contenedor = $form.find('[data-error-for]').filter(function () {
+                                    return $(this).attr('data-error-for') === campo;
+                                });
+
+                                $input.addClass('is-invalid');
+                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                            });
+
+                            // Enfocar el primer campo inválido.
+                            $form.find('.is-invalid').first().trigger('focus');
+                            return;
+                        }
+
+                        // Errores distintos de validación.
+                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
+                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    }
+                });
+            });
+        });
+
+        //Función para actualizar usuarios
+        $('#form-usuario').submit(function (e) {
+            e.preventDefault();
+            var id =  $('#edit-id').val();
+            let usuarioData = new FormData(this);
+
+            if(id > 0){
+                usuarioData.append('_method', 'PUT');
+                $.ajax({
+                    url: '{{ url('usuario') }}/' + id,
+                    method: 'POST',
+                    data: usuarioData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Éxito!",
+                                text: "El registro ha sido actualizado correctamente.",
+                                icon: "success"
+                            });
+                            $('#form-usuario')[0].reset();
+
+                            window.limpiarErrores('#form-usuario');
+
+                            $('#formUsuarioModal').modal('hide');
+                            $('#tabla-usuario').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Usuario no encontrado!",
+                                icon: "error"
+                            });
+                            $('#form-usuario')[0].reset();
+                            $('#formUsuarioModal').modal('hide');
+                            $('#tabla-usuario').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
+                        // Errores de validación de Laravel.
+                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+
+                            const errores = xhr.responseJSON.errors;
+
+                            $.each(errores, function (campo, mensajes) {
+
+                                // Encontrar el input por su atributo name.
+                                const $input = $form.find(':input').filter(function () {
+                                    return this.name === campo;
+                                });
+
+                                // Encontrar el contenedor de error correspondiente.
+                                const $contenedor = $form.find('[data-error-for]').filter(function () {
+                                    return $(this).attr('data-error-for') === campo;
+                                });
+
+                                $input.addClass('is-invalid');
+                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                            });
+
+                            // Enfocar el primer campo inválido.
+                            $form.find('.is-invalid').first().trigger('focus');
+                            return;
+                        }
+
+                        // Errores distintos de validación.
+                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
+                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    }
+                });
+            }else{
+                $.ajax({
+                    url: '{{ route('usuario.crear') }}',
+                    method: 'post',
+                    data: usuarioData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.status == 200) {
+                            //alert("Saved successfully");
+                            Swal.fire({
+                                title: "Éxito!",
+                                text: "El registro ha sido agregado correctamente.",
+                                icon: "success"
+                            });
+                            $('#form-usuario')[0].reset();
+
+                            window.limpiarErrores('#form-usuario');
+
+                            $('#formUsuarioModal').modal('hide');
+                            $('#tabla-usuario').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
+                        // Errores de validación de Laravel.
+                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+
+                            const errores = xhr.responseJSON.errors;
+
+                            $.each(errores, function (campo, mensajes) {
+
+                                // Encontrar el input por su atributo name.
+                                const $input = $form.find(':input').filter(function () {
+                                    return this.name === campo;
+                                });
+
+                                // Encontrar el contenedor de error correspondiente.
+                                const $contenedor = $form.find('[data-error-for]').filter(function () {
+                                    return $(this).attr('data-error-for') === campo;
+                                });
+
+                                $input.addClass('is-invalid');
+                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                            });
+
+                            // Enfocar el primer campo inválido.
+                            $form.find('.is-invalid').first().trigger('focus');
+                            return;
+                        }
+
+                        // Errores distintos de validación.
+                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
+                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.delete-btn', function() {
+            var id = $(this).data('id');
+
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "¡Esta acción no se puede revertir!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, eliminar usuario!",
+                cancelButtonText: "No, cancelar!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('usuario.eliminar') }}',
+                        type: 'DELETE',
+                        data: {id: id},
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            //console.log(response); // Debugging: log the response
+                            if (response.status === 200) {
+                                Swal.fire({
+                                    title: "Eliminado!",
+                                    text: "El usuario ha sido eliminado.",
+                                    icon: "success"
+                                });
+                                $('#tabla-usuario').DataTable().ajax.reload(); // Reload the table data
+                            } else {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "No se pudo eliminar el usuario.",
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    });
+                }
+            })
         });
     </script>
 @endpush

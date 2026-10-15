@@ -22,3 +22,22 @@ Route::middleware(['auth', 'verified','permission:usuarios.ver',])->group(functi
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::post('/usuarios', [UsuarioController::class, 'datatable'])->name('datatable.usuarios');
 });
+
+
+Route::post('/agregarUsuario', [UsuarioController::class, 'store'])
+    ->middleware(['auth', 'verified', 'permission:usuarios.crear'])
+    ->name('usuario.crear');
+
+Route::post('/searchUsuario', [UsuarioController::class, 'getById'])
+    ->middleware(['auth', 'verified', 'permission:usuarios.editar'])
+    ->name('usuario.buscar');
+
+Route::middleware(['auth', 'verified','permission:usuarios.editar',])->group(function () {
+
+    Route::put('/usuario/{usuario}', [UsuarioController::class, 'update'])->name('usuario.editar');
+    Route::post('/updatePassword', [UsuarioController::class, 'update_password'])->name('usuario.password');
+});
+
+Route::delete('/eliminarUsuario', [UsuarioController::class, 'destroy'])
+    ->middleware(['auth', 'verified', 'permission:usuarios.eliminar'])
+    ->name('usuario.eliminar');
