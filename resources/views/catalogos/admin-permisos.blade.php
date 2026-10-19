@@ -138,7 +138,7 @@
             $('#labelForm').html('Editar');
 
             $('#edit-id').val(permiso.id);
-            $('#nombre').val(permiso.nombre);
+            $('#name').val(permiso.name);
         }
 
         $(document).ready(function () {
@@ -149,7 +149,7 @@
                 deferRender: true,
                 responsive: true,
                 ajax: {
-                    url: "{{ route('datatable.permisos') }}",
+                    url: "{{ route('permisos.datatable') }}",
                     type: "POST",
                     dataType: "json",
                     headers: {
@@ -217,7 +217,7 @@
                 modoFormulario = 'editar';
                 var id = $(this).data('id');
                 $.ajax({
-                    url: '{{ route('permiso.buscar') }}',
+                    url: '{{ route('permisos.buscar') }}',
                     method: 'post',
                     data: {
                         id: id
@@ -238,7 +238,7 @@
                         if(response.status == 404){
                             Swal.fire({
                                 title: "Error!",
-                                text: "Permiso no encontrada!",
+                                text: "Permiso no encontrado!",
                                 icon: "error"
                             });
                         }
@@ -290,7 +290,7 @@
                 modoFormulario = 'editar';
                 var id = $(this).data('id');
                 $.ajax({
-                    url: '{{ route('permiso.buscar') }}',
+                    url: '{{ route('permisos.buscar') }}',
                     method: 'post',
                     data: {
                         id: id
@@ -355,156 +355,76 @@
             });
         });
 
-        //Función para actualizar permisos
+        //Función para agregar y actualizar permisos
         $('#form-permiso').submit(function (e) {
             e.preventDefault();
-            var id =  $('#edit-id').val();
-            let usuarioData = new FormData(this);
+            const $form = $(this);
+            const id = $('#edit-id').val();
+            const esEdicion = id > 0;
 
-            if(id > 0){
-                usuarioData.append('_method', 'PUT');
-                $.ajax({
-                    url: '{{ url('permiso') }}/' + id,
-                    method: 'POST',
-                    data: usuarioData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.status === 200) {
-                            Swal.fire({
-                                title: "Éxito!",
-                                text: "El registro ha sido actualizado correctamente.",
-                                icon: "success"
-                            });
-                            $('#form-permiso')[0].reset();
+            const datos = new FormData(this);
+            if (esEdicion) datos.append('_method', 'PUT');
 
-                            window.limpiarErrores('#form-permiso');
+            $.ajax({
+                url: esEdicion ? '{{ url('permisos') }}/' + id : '{{ route('permisos.crear') }}',
+                method: 'POST',
+                data: datos,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function () {
+                    Swal.fire({
+                        title: 'Éxito!',
+                        text: esEdicion
+                            ? 'El registro ha sido actualizado correctamente.'
+                            : 'El registro ha sido agregado correctamente.',
+                        icon: 'success'
+                    });
+                    $form[0].reset();
+                    window.limpiarErrores($form);
+                    $('#formPermisoModal').modal('hide');
+                    $('#tabla-permiso').DataTable().ajax.reload();
+                },
+                error: function (xhr) {
+                    window.limpiarErrores($form);
 
-                            $('#formPermisoModal').modal('hide');
-                            $('#tabla-permiso').DataTable().ajax.reload();
-                        } else {
-                            Swal.fire({
-                                title: "Error!",
-                                text: "Permiso no encontrado!",
-                                icon: "error"
-                            });
-                            $('#form-permiso')[0].reset();
-                            $('#formPermisoModal').modal('hide');
-                            $('#tabla-permiso').DataTable().ajax.reload();
-                        }
-                    },
-                    error: function (xhr) {
-                        const $form = $('#form-permiso');
-
-                        // Eliminar mensajes anteriores.
-                        window.limpiarErrores($form);
-
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
-                        alert('Ocurrió un error al guardar el permiso. Intenta nuevamente.');
+                    // Errores de validación
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        $.each(xhr.responseJSON.errors, function (campo, mensajes) {
+                            $form.find(':input').filter(function () { return this.name === campo; })
+                                .addClass('is-invalid');
+                            $form.find('[data-error-for]').filter(function () {
+                                return $(this).attr('data-error-for') === campo;
+                            }).text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                        });
+                        $form.find('.is-invalid').first().trigger('focus');
+                        return;
                     }
-                });
-            }else{
-                $.ajax({
-                    url: '{{ route('permiso.crear') }}',
-                    method: 'post',
-                    data: usuarioData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.status == 200) {
-                            //alert("Saved successfully");
-                            Swal.fire({
-                                title: "Éxito!",
-                                text: "El registro ha sido agregado correctamente.",
-                                icon: "success"
-                            });
-                            $('#form-permiso')[0].reset();
 
-                            window.limpiarErrores('#form-permiso');
-
-                            $('#formPermisoModal').modal('hide');
-                            $('#tabla-permiso').DataTable().ajax.reload();
-                        }
-                    },
-                    error: function (xhr) {
-                        const $form = $('#form-permiso');
-
-                        // Eliminar mensajes anteriores.
-                        window.limpiarErrores($form);
-
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
-                        alert('Ocurrió un error al guardar el permiso. Intenta nuevamente.');
+                    // El permiso ya no existe
+                    if (xhr.status === 404) {
+                        Swal.fire({ title: 'Error!', text: 'Permiso no encontrado!', icon: 'error' });
+                        $form[0].reset();
+                        $('#formPermisoModal').modal('hide');
+                        $('#tabla-permiso').DataTable().ajax.reload();
+                        return;
                     }
-                });
-            }
+
+                    console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Ocurrió un error al guardar el permiso. Intenta nuevamente.',
+                        icon: 'error'
+                    });
+                }
+            });
         });
 
-        $(document).on('click', '.delete-btn', function() {
+        $(document).on('click', '.delete-btn', function () {
             var id = $(this).data('id');
+            var url = '{{ route('permisos.eliminar', ':id') }}'.replace(':id', id);
 
             Swal.fire({
                 title: "¿Estás seguro?",
@@ -516,34 +436,36 @@
                 confirmButtonText: "Sí, eliminar permiso!",
                 cancelButtonText: "No, cancelar!",
             }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('permiso.eliminar') }}',
-                        type: 'DELETE',
-                        data: {id: id},
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            //console.log(response); // Debugging: log the response
-                            if (response.status === 200) {
-                                Swal.fire({
-                                    title: "Eliminado!",
-                                    text: "El permiso ha sido eliminado.",
-                                    icon: "success"
-                                });
-                                $('#tabla-permiso').DataTable().ajax.reload(); // Reload the table data
-                            } else {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "No se pudo eliminar el permiso.",
-                                    icon: "error"
-                                });
-                            }
-                        }
-                    });
-                }
-            })
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        Swal.fire({
+                            title: "Eliminado!",
+                            text: "El permiso ha sido eliminado.",
+                            icon: "success"
+                        });
+                        $('#tabla-permiso').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        var mensajes = {
+                            403: "No tienes permiso para realizar esta acción.",
+                            404: "El permiso ya no existe.",
+                            419: "La sesión expiró. Recarga la página."
+                        };
+                        Swal.fire({
+                            title: "Error!",
+                            text: mensajes[xhr.status] || "No se pudo eliminar el permiso.",
+                            icon: "error"
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endpush

@@ -47,13 +47,16 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 });
 
 /**** Rutas para Permisos ****/
-Route::middleware(['auth', 'verified','permission:permisos.administrar',])->group(function () {
-
-    Route::get('/permisos', [PermisoController::class, 'index'])->name('permisos.index');
-    Route::post('/permisos', [PermisoController::class, 'datatable'])->name('datatable.permisos');
-    Route::post('/searchUsuario', [PermisoController::class, 'getById'])->name('permiso.buscar');
-    Route::post('/agregarPermiso', [PermisoController::class, 'store'])->name('permiso.crear');
-    Route::put('/editarPermiso/', [PermisoController::class, 'update'])->name('permiso.editar');
-    Route::delete('/eliminarPermiso', [PermisoController::class, 'destroy'])->name('permiso.eliminar');
-});
+Route::middleware(['auth', 'verified', 'permission:permisos.administrar'])
+    ->prefix('permisos')
+    ->name('permisos.')
+    ->controller(PermisoController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{permiso}', 'update')->name('editar');
+        Route::delete('/{permiso}', 'destroy')->name('eliminar');
+    });
 

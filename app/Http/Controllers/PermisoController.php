@@ -25,6 +25,23 @@ class PermisoController extends Controller
         return DataTables::of($query)->toJson();
     }
 
+    public function getById(Request $request)
+    {
+        $permiso = Permission::findOrFail($request->id);
+
+        if($permiso && !empty($permiso)){
+            return response()->json([
+                'status' => 200,
+                'permiso' => $permiso
+            ]);
+        }else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Not found'
+            ]);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -55,55 +72,40 @@ class PermisoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, Permission $permiso)
     {
-        $permiso = Permission::find($request->id);
-        if($permiso){
-            $validacion = $request->validate([
-                'name' => ['required', 'string', Rule::unique('permissions')->ignore($permiso)],
-            ],[
-                'required' => 'Este campo es requerido.',
-                'clave.unique' => 'La clave ya ha sido registrada.',
-                'regex' => 'Este campo tiene caracteres inválidos.',
-                'numeric' => 'Solo se permiten números.',
-                'digits' => 'El campo debe estar conformado por :digits dígitos.',
-                'min' => 'Este campo debe tener al menos :min caracteres.',
-                'max' => 'Este campo no debe exceder los :max caracteres.',
-                'lowercase' => 'Este campo solo permite el uso de minúsculas.',
-                'uppercase' => 'Este campo solo permite el uso de mayúsculas.'
-            ]);
+        $validated = $request->validate([
+            'name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('permissions', 'name')
+                    ->where('guard_name', $permiso->guard_name)
+                    ->ignore($permiso),
+            ],
+        ], [
+            'required'    => 'Este campo es requerido.',
+            'max'         => 'Este campo no debe exceder los :max caracteres.',
+            'name.unique' => 'El permiso ya ha sido registrado.',
+        ]);
 
-            $permiso->name = $request->name;
-            $permiso->save();
-            return response()->json([
-                'status' => 200,
-                'message' => 'Updated successfully'
-            ]);
+        $permiso->update($validated);
 
-        }else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Not found'
-            ]);
-        }
+        return response()->json(['message' => 'Permiso actualizado']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     *
      */
-    public function destroy(Request $request)
+    public function destroy(Permission $permiso)
     {
-        $permiso = Permission::find($request->id);
         try {
             if ($permiso && $permiso->delete()) {
-                return response()->json(['status' => 200, 'message' => 'Deleted successfully.']);
+                return response()->json(['message' => 'Permiso eliminado.']);
             }
         } catch (Exception $e) {
             Log::error("Error capturado:" . $e->getMessage());
-            return response()->json(['status' => 400, 'message' => 'Failed to delete.']);
+            return response()->json(['message' => 'Error al eliminar.']);
         }
 
     }
