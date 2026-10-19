@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUsuarioRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Models\Usuario;
 use Exception;
@@ -72,13 +73,14 @@ class UsuarioController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(StoreUsuarioRequest $request)
     {
         DB::beginTransaction();
-
         try {
-
             $usuario = Usuario::create([
                 'nombre' => $request->nombre,
                 'primer_apellido' => $request->primer_apellido,
@@ -105,81 +107,63 @@ class UsuarioController extends Controller
         }
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Usuario  $usuario
+     * @return \Illuminate\Http\Response
+     */
     public function update(UpdateUsuarioRequest $request, Usuario $usuario)
     {
-            $usuario->nombre = $request->nombre;
-            $usuario->primer_apellido = $request->primer_apellido;
-            $usuario->segundo_apellido = $request->segundo_apellido;
-            $usuario->curp = $request->curp;
-            $usuario->celular = $request->celular;
-            $usuario->email = $request->email;
-            if($request->password != ''){
-                $usuario->password = Hash::make($request->password, ['rounds' => 12,]);
-            }
-            $usuario->save();
-
-            $rol = Role::findOrFail($request->role_id);
-            $usuario->SyncRoles($rol->name);
-
-            return response()->json([
-                'status' => 200,
-                'message' => 'Updated successfully'
-            ]);
-    }
-
-    public function update_password(Request $request)
-    {
-        $user = Usuario::find($request->id);
-        if($user){
-            $validacion = $request->validate([
-                'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
-            ],[
-                'required' => 'Este campo es requerido.',
-                'regex' => 'Este campo tiene caracteres inválidos.',
-                'curp.regex' => 'La CURP tiene caracteres inválidos, verifiquela.',
-                'numeric' => 'Solo se permiten números.',
-                'celular.digits' => 'El celular estar conformado por :digits dígitos.',
-                'curp.size' => 'La CURP debe estar conformada por :size caracteres.',
-                'min' => 'Este campo debe tener al menos :min caracteres.',
-                'max' => 'Este campo no debe exceder los :max caracteres.',
-                'email.email' => 'Ingrese un correo electrónico valido.',
-                'lowercase' => 'Este campo solo permite el uso de minúsculas.',
-                'uppercase' => 'Este campo solo permite el uso de mayúsculas.',
-                'email.unique' => 'Este correo ya se encuentra registrado.'
-            ]);
-
-            $user->password = Hash::make($request->password, ['rounds' => 12,]);
-            $user->save();
-
-            return response()->json([
-                'status' => 200,
-                'message' => 'Updated successfully'
-            ]);
-
-        }else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Not found'
-            ]);
+        $usuario->nombre = $request->nombre;
+        $usuario->primer_apellido = $request->primer_apellido;
+        $usuario->segundo_apellido = $request->segundo_apellido;
+        $usuario->curp = $request->curp;
+        $usuario->celular = $request->celular;
+        $usuario->email = $request->email;
+        if($request->password != ''){
+            $usuario->password = Hash::make($request->password, ['rounds' => 12,]);
         }
+        $usuario->save();
+
+        $rol = Role::findOrFail($request->role_id);
+        $usuario->SyncRoles($rol->name);
+
+        return response()->json(['message' => 'Usuario actualizado']);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Usuario  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request, Usuario $usuario)
     {
-        $usuario = Usuario::find($request->id);
+        $usuario->password = Hash::make($request->password, ['rounds' => 12]);
+        $usuario->save();
+
+        return response()->json(['message' => 'Contraseña actualizada']);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Models\Usuario  $usuario
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Usuario $usuario)
+    {
         try {
             if ($usuario && $usuario->delete()) {
-                return response()->json(['status' => 200, 'message' => 'Deleted successfully.']);
+                return response()->json(['message' => 'Usuario eliminado.']);
             }
         } catch (Exception $e) {
             Log::error("Error capturado:" . $e->getMessage());
-            return response()->json(['status' => 400, 'message' => 'Failed to delete.']);
+            return response()->json(['message' => 'Error al eliminar.']);
         }
+
     }
 }

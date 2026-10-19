@@ -19,30 +19,28 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'permission:dashboard.ver'])
 ->name('dashboard');
 
+/**** Rutas para Usuarios ****/
 Route::middleware(['auth', 'verified','permission:usuarios.ver',])->group(function () {
-
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::post('/usuarios', [UsuarioController::class, 'datatable'])->name('datatable.usuarios');
 });
 
-/**** Rutas para Usuarios ****/
-Route::post('/agregarUsuario', [UsuarioController::class, 'store'])
+Route::post('/usuarios/crear', [UsuarioController::class, 'store'])
     ->middleware(['auth', 'verified', 'permission:usuarios.crear'])
-    ->name('usuario.crear');
+    ->name('usuarios.crear');
 
 Route::middleware(['auth', 'verified','permission:usuarios.editar',])->group(function () {
-
-    Route::post('/searchUsuario', [UsuarioController::class, 'getById'])->name('usuario.buscar');
-    Route::put('/usuario/{usuario}', [UsuarioController::class, 'update'])->name('usuario.editar');
-    Route::post('/updatePassword', [UsuarioController::class, 'update_password'])->name('usuario.password');
+    Route::post('/usuarios/buscar', [UsuarioController::class, 'getById'])->name('usuarios.buscar');
+    Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.editar');
+    Route::put('/usuarios/{usuario}/password', [UsuarioController::class, 'updatePassword'])->name('usuarios.password');
 });
 
-Route::delete('/eliminarUsuario', [UsuarioController::class, 'destroy'])
+Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])
     ->middleware(['auth', 'verified', 'permission:usuarios.eliminar'])
-    ->name('usuario.eliminar');
+    ->name('usuarios.eliminar');
+
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-
     Route::get('filtros/roles', [FiltrosController::class, 'roles'])->name('filtros.roles');
 });
 

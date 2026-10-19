@@ -29,7 +29,7 @@
             </p>
         </div>
 
-        @if (Route::has('usuario.crear'))
+        @if (Route::has('usuarios.crear'))
             @can('usuarios.crear')
                 <button class="btn btn-inelmy" onclick="window.agregarRegistro('#form-usuario', '#formUsuarioModal')">
                     <i class="bi bi-person-plus me-1"></i>
@@ -260,9 +260,9 @@
                     </div>
 
                     {{-- Formulario --}}
-                    <form id="form-usuario" method="POST">
+                    <form id="form-password" method="POST">
                         @csrf
-                        <input type="hidden" id="edit-id" name="id">
+                        <input type="hidden" id="password-id" name="id">
 
                         <div class="modal-body">
                             <div class="row g-3">
@@ -514,7 +514,7 @@
                 modoFormulario = 'editar';
                 var id = $(this).data('id');
                 $.ajax({
-                    url: '{{ route('usuario.buscar') }}',
+                    url: '{{ route('usuarios.buscar') }}',
                     method: 'post',
                     data: {
                         id: id
@@ -550,9 +550,7 @@
                         if (xhr.status === 422 && xhr.responseJSON?.errors) {
 
                             const errores = xhr.responseJSON.errors;
-
                             $.each(errores, function (campo, mensajes) {
-
                                 // Encontrar el input por su atributo name.
                                 const $input = $form.find(':input').filter(function () {
                                     return this.name === campo;
@@ -564,13 +562,11 @@
                                 });
 
                                 $input.addClass('is-invalid');
-
                                 $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
                             });
 
                             // Enfocar el primer campo inválido.
                             $form.find('.is-invalid').first().trigger('focus');
-
                             return;
                         }
 
@@ -587,7 +583,7 @@
                 modoFormulario = 'editar';
                 var id = $(this).data('id');
                 $.ajax({
-                    url: '{{ route('usuario.buscar') }}',
+                    url: '{{ route('usuarios.buscar') }}',
                     method: 'post',
                     data: {
                         id: id
@@ -652,156 +648,143 @@
             });
         });
 
-        //Función para actualizar usuarios
+        //Función para agregar y actualizar usuarios
         $('#form-usuario').submit(function (e) {
             e.preventDefault();
-            var id =  $('#edit-id').val();
-            let usuarioData = new FormData(this);
+            const $form = $(this);
+            const id = $('#edit-id').val();
+            const esEdicion = id > 0;
 
-            if(id > 0){
-                usuarioData.append('_method', 'PUT');
-                $.ajax({
-                    url: '{{ url('usuario') }}/' + id,
-                    method: 'POST',
-                    data: usuarioData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.status === 200) {
-                            Swal.fire({
-                                title: "Éxito!",
-                                text: "El registro ha sido actualizado correctamente.",
-                                icon: "success"
-                            });
-                            $('#form-usuario')[0].reset();
+            const datos = new FormData(this);
+            if (esEdicion) datos.append('_method', 'PUT');
 
-                            window.limpiarErrores('#form-usuario');
+            $.ajax({
+                url: esEdicion ? '{{ url('usuarios') }}/' + id : '{{ route('usuarios.crear') }}',
+                method: 'POST',
+                data: datos,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function () {
+                    Swal.fire({
+                        title: 'Éxito!',
+                        text: esEdicion
+                            ? 'El registro ha sido actualizado correctamente.'
+                            : 'El registro ha sido agregado correctamente.',
+                        icon: 'success'
+                    });
+                    $form[0].reset();
+                    window.limpiarErrores($form);
+                    $('#formUsuarioModal').modal('hide');
+                    $('#tabla-usuario').DataTable().ajax.reload();
+                },
+                error: function (xhr) {
+                    const $form = $('#form-usuario');
 
-                            $('#formUsuarioModal').modal('hide');
-                            $('#tabla-usuario').DataTable().ajax.reload();
-                        } else {
-                            Swal.fire({
-                                title: "Error!",
-                                text: "Usuario no encontrado!",
-                                icon: "error"
-                            });
-                            $('#form-usuario')[0].reset();
-                            $('#formUsuarioModal').modal('hide');
-                            $('#tabla-usuario').DataTable().ajax.reload();
-                        }
-                    },
-                    error: function (xhr) {
-                        const $form = $('#form-usuario');
+                    // Eliminar mensajes anteriores.
+                    window.limpiarErrores($form);
 
-                        // Eliminar mensajes anteriores.
-                        window.limpiarErrores($form);
-
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
-                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    // Errores de validación
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        $.each(xhr.responseJSON.errors, function (campo, mensajes) {
+                            $form.find(':input').filter(function () { return this.name === campo; })
+                                .addClass('is-invalid');
+                            $form.find('[data-error-for]').filter(function () {
+                                return $(this).attr('data-error-for') === campo;
+                            }).text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                        });
+                        $form.find('.is-invalid').first().trigger('focus');
+                        return;
                     }
-                });
-            }else{
-                $.ajax({
-                    url: '{{ route('usuario.crear') }}',
-                    method: 'post',
-                    data: usuarioData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        if (response.status == 200) {
-                            //alert("Saved successfully");
-                            Swal.fire({
-                                title: "Éxito!",
-                                text: "El registro ha sido agregado correctamente.",
-                                icon: "success"
-                            });
-                            $('#form-usuario')[0].reset();
 
-                            window.limpiarErrores('#form-usuario');
-
-                            $('#formUsuarioModal').modal('hide');
-                            $('#tabla-usuario').DataTable().ajax.reload();
-                        }
-                    },
-                    error: function (xhr) {
-                        const $form = $('#form-usuario');
-
-                        // Eliminar mensajes anteriores.
-                        window.limpiarErrores($form);
-
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
-                        alert('Ocurrió un error al guardar el usuario. Intenta nuevamente.');
+                    // El usuario ya no existe
+                    if (xhr.status === 404) {
+                        Swal.fire({ title: 'Error!', text: 'Usuario no encontrado!', icon: 'error' });
+                        $form[0].reset();
+                        $('#formUsuarioModal').modal('hide');
+                        $('#tabla-usuario').DataTable().ajax.reload();
+                        return;
                     }
-                });
-            }
+
+                    console.error('Error al guardar usuario:', xhr.responseJSON ?? xhr.responseText);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Ocurrió un error al guardar el usuario. Intenta nuevamente.',
+                        icon: 'error'
+                    });
+                }
+            });
         });
 
-        $(document).on('click', '.delete-btn', function() {
+        // Función para actualizar contraseña
+        $('#form-password').submit(function (e) {
+            e.preventDefault();
+            const $form = $(this);
+            const id = $('#password-id').val();
+
+            const datos = new FormData(this);
+            datos.append('_method', 'PUT');
+
+            $.ajax({
+                url: '{{ url('usuarios') }}/' + id + '/password',
+                method: 'POST',
+                data: datos,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function () {
+                    Swal.fire({
+                        title: 'Éxito!',
+                        text: 'La contraseña ha sido actualizada correctamente.',
+                        icon: 'success'
+                    });
+                    $form[0].reset();
+                    window.limpiarErrores($form);
+                    $('#formPasswordModal').modal('hide');
+                    $('#tabla-usuario').DataTable().ajax.reload();
+                },
+                error: function (xhr) {
+                    window.limpiarErrores($form);
+
+                    // Errores de validación
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        $.each(xhr.responseJSON.errors, function (campo, mensajes) {
+                            $form.find(':input').filter(function () { return this.name === campo; })
+                                .addClass('is-invalid');
+                            $form.find('[data-error-for]').filter(function () {
+                                return $(this).attr('data-error-for') === campo;
+                            }).text(mensajes[0] ?? 'El valor ingresado no es válido.');
+                        });
+                        $form.find('.is-invalid').first().trigger('focus');
+                        return;
+                    }
+
+                    // El usuario ya no existe
+                    if (xhr.status === 404) {
+                        Swal.fire({ title: 'Error!', text: 'Usuario no encontrado!', icon: 'error' });
+                        $form[0].reset();
+                        $('#formPasswordModal').modal('hide');
+                        $('#tabla-usuario').DataTable().ajax.reload();
+                        return;
+                    }
+
+                    console.error('Error al actualizar contraseña:', xhr.responseJSON ?? xhr.responseText);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Ocurrió un error al actualizar la contraseña. Intenta nuevamente.',
+                        icon: 'error'
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-btn', function () {
             var id = $(this).data('id');
+            var url = '{{ route('usuarios.eliminar', ':id') }}'.replace(':id', id);
 
             Swal.fire({
                 title: "¿Estás seguro?",
@@ -813,34 +796,36 @@
                 confirmButtonText: "Sí, eliminar usuario!",
                 cancelButtonText: "No, cancelar!",
             }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '{{ route('usuario.eliminar') }}',
-                        type: 'DELETE',
-                        data: {id: id},
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            //console.log(response); // Debugging: log the response
-                            if (response.status === 200) {
-                                Swal.fire({
-                                    title: "Eliminado!",
-                                    text: "El usuario ha sido eliminado.",
-                                    icon: "success"
-                                });
-                                $('#tabla-usuario').DataTable().ajax.reload(); // Reload the table data
-                            } else {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "No se pudo eliminar el usuario.",
-                                    icon: "error"
-                                });
-                            }
-                        }
-                    });
-                }
-            })
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function () {
+                        Swal.fire({
+                            title: "Eliminado!",
+                            text: "El usuario ha sido eliminado.",
+                            icon: "success"
+                        });
+                        $('#tabla-usuario').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        var mensajes = {
+                            403: "No tienes permiso para realizar esta acción.",
+                            404: "El usuario ya no existe.",
+                            419: "La sesión expiró. Recarga la página."
+                        };
+                        Swal.fire({
+                            title: "Error!",
+                            text: mensajes[xhr.status] || "No se pudo eliminar el usuario.",
+                            icon: "error"
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endpush
