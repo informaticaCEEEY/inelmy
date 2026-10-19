@@ -91,10 +91,6 @@ class UsuarioController extends Controller
             $rol = Role::findOrFail($request->role_id);
             $usuario->SyncRoles($rol->name);
 
-            if ($request->role_id == 5) {
-                exit;
-            }
-
             DB::commit();
 
             return response()->json(['status' => 200]);

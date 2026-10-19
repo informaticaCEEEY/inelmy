@@ -55,4 +55,11 @@ class Usuario extends Authenticatable
             'estatus' => 'boolean',
         ];
     }
+
+    protected $appends = ['nombre_completo'];
+
+    public function getNombreCompletoAttribute()
+    {
+        return trim("{$this->primer_apellido} {$this->segundo_apellido} {$this->nombre}");
+    }
 }

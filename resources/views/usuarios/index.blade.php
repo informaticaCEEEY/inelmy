@@ -41,7 +41,7 @@
     {{-- Tabla de usuarios --}}
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="usuarios-table-wrapper">
                 <div class="row mb-3">
                     <div class="col-md-3">
                         <label>Roles</label>
@@ -440,23 +440,41 @@
                     {
                         data: null, name: 'acciones', orderable: false,  searchable: false,
                         render: function (data, type, row) {
+                            if (type !== 'display') {
+                                return '';
+                            }
+
                             let botones = '';
                             @can('usuarios.editar')
                                 botones += `
-                                    <button class="btn btn-sm btn-primary password-btn" data-id="${data.id}">Cambiar Contraseña</button>
+                                    <button class="btn btn-sm btn-primary password-btn" data-id="${data.id}"
+                                        title="Cambiar contraseña" aria-label="Cambiar contraseña">
+                                        <i class="bi bi-key-fill"></i>
+                                    </button>
                                     `;
                             @endcan
                             @can('usuarios.editar')
                                 botones += `
-                                    <button class="btn btn-sm btn-success edit-btn" data-id="${data.id}">Editar</button>
+                                    <button class="btn btn-sm btn-success edit-btn" data-id="${data.id}"
+                                        title="Editar usuario" aria-label="Editar usuario">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
                                     `;
                             @endcan
                             @can('usuarios.eliminar')
                                 botones += `
-                                        <button class="btn btn-sm btn-danger delete-btn" data-id="${data.id}">Eliminar</button>
+                                        <button class="btn btn-sm btn-danger delete-btn" data-id="${data.id}"
+                                            title="Eliminar usuario" aria-label="Eliminar usuario">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
                                     `;
                             @endcan
-                            return botones;
+
+                            return `
+                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                    ${botones}
+                                </div>
+                            `;
                         }
                     }
                 ],
@@ -465,6 +483,7 @@
                     { responsivePriority: 2, targets: 1 },
                     { responsivePriority: 3, targets: -3 },
                     { responsivePriority: 4, targets: -4 },
+                    { "width": "15%", "targets": 6 }
                 ],
                 dom: 'frtip',
                 language: {
@@ -582,8 +601,7 @@
                         if (response.status == 200) {
                             let usuario = response.usuario;
                             $('#password-id').val(usuario.id);
-                            let nombre_completo = usuario.primer_apellido.concat(" ", usuario.segundo_apellido, " ", usuario.nombre);
-                            $('#nombre_completo').val(nombre_completo);
+                            $('#nombre_completo').val(usuario.nombre_completo);
                             $('#formPasswordModal').modal('show');
                         }
                         if(response.status == 404){
