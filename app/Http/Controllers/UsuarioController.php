@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
@@ -177,7 +178,7 @@ class UsuarioController extends Controller
                 return response()->json(['status' => 200, 'message' => 'Deleted successfully.']);
             }
         } catch (Exception $e) {
-            //Log::error("Error capturado:" . $e->getMessage());
+            Log::error("Error capturado:" . $e->getMessage());
             return response()->json(['status' => 400, 'message' => 'Failed to delete.']);
         }
     }

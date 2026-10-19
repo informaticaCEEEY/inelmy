@@ -37,6 +37,11 @@
                                     Usuarios
                                 </a>
                             </li>
+                            <li>
+                                <a class="nav-link {{ request()->routeIs('permisos.index') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
+                                    Permisos
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

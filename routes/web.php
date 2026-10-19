@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FiltrosController;
+use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,17 +25,14 @@ Route::middleware(['auth', 'verified','permission:usuarios.ver',])->group(functi
     Route::post('/usuarios', [UsuarioController::class, 'datatable'])->name('datatable.usuarios');
 });
 
-
+/**** Rutas para Usuarios ****/
 Route::post('/agregarUsuario', [UsuarioController::class, 'store'])
     ->middleware(['auth', 'verified', 'permission:usuarios.crear'])
     ->name('usuario.crear');
 
-Route::post('/searchUsuario', [UsuarioController::class, 'getById'])
-    ->middleware(['auth', 'verified', 'permission:usuarios.editar'])
-    ->name('usuario.buscar');
-
 Route::middleware(['auth', 'verified','permission:usuarios.editar',])->group(function () {
 
+    Route::post('/searchUsuario', [UsuarioController::class, 'getById'])->name('usuario.buscar');
     Route::put('/usuario/{usuario}', [UsuarioController::class, 'update'])->name('usuario.editar');
     Route::post('/updatePassword', [UsuarioController::class, 'update_password'])->name('usuario.password');
 });
@@ -47,3 +45,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('filtros/roles', [FiltrosController::class, 'roles'])->name('filtros.roles');
 });
+
+/**** Rutas para Permisos ****/
+Route::middleware(['auth', 'verified','permission:permisos.administrar',])->group(function () {
+
+    Route::get('/permisos', [PermisoController::class, 'index'])->name('permisos.index');
+    Route::post('/permisos', [PermisoController::class, 'datatable'])->name('datatable.permisos');
+    Route::post('/searchUsuario', [PermisoController::class, 'getById'])->name('permiso.buscar');
+    Route::post('/agregarPermiso', [PermisoController::class, 'store'])->name('permiso.crear');
+    Route::put('/editarPermiso/', [PermisoController::class, 'update'])->name('permiso.editar');
+    Route::delete('/eliminarPermiso', [PermisoController::class, 'destroy'])->name('permiso.eliminar');
+});
+
