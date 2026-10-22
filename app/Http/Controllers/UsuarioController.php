@@ -22,7 +22,7 @@ class UsuarioController extends Controller
     public function index()
     {
         $roles = Role::orderBy('name', 'asc')->get();
-        return view('usuarios/index', compact('roles'));
+        return view('usuarios.index', compact('roles'));
     }
 
     public function getById(Request $request)

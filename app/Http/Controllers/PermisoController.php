@@ -16,7 +16,7 @@ class PermisoController extends Controller
      */
     public function index()
     {
-        return view('catalogos/admin-permisos');
+        return view('permisos.index');
     }
 
     public function datatable()

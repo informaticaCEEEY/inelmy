@@ -340,6 +340,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
     @vite('resources/js/functions.js')
+    @vite('resources/js/ajax-helpers.js')
     @vite('resources/js/filtros-datatables.js')
     {{-- Inicialización de DataTables --}}
     <script>
@@ -627,42 +628,14 @@
         });
 
         $(document).on('click', '.delete-btn', function () {
-            var id = $(this).data('id');
-            var url = '{{ route('usuarios.eliminar', ':id') }}'.replace(':id', id);
+            const id = $(this).data('id');
 
-            Swal.fire({
-                title: "¿Estás seguro?",
-                text: "¡Esta acción no se puede revertir!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Sí, eliminar usuario!",
-                cancelButtonText: "No, cancelar!",
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        Swal.fire({
-                            title: "Eliminado!",
-                            text: "El usuario ha sido eliminado.",
-                            icon: "success"
-                        });
-                        $('#tabla-usuario').DataTable().ajax.reload();
-                    },
-                    error: function (xhr) {
-                        window.manejarErrorAjax(xhr, {
-                            mensajes: { 404: 'El usuario ya no existe.' },
-                            alNoEncontrado: () => $('#tabla-usuario').DataTable().ajax.reload()
-                        });
-                    }
-                });
+            window.eliminarRegistro({
+                url: '{{ route('usuarios.eliminar', ':id') }}'.replace(':id', id),
+                tabla: '#tabla-usuario',
+                textoBoton: 'Sí, eliminar usuario!',
+                textoExito: 'El usuario ha sido eliminado.',
+                mensajes: { 404: 'El usuario ya no existe.' }
             });
         });
     </script>

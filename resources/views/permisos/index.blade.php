@@ -16,37 +16,40 @@
 
 @section('content')
 <div class="container-fluid px-3 px-lg-4 py-4">
+    <div class="catalogo-compacto">
+        {{-- Encabezado --}}
+        <div class="d-flex flex-wrap justify-content-between
+                    align-items-center gap-3 mb-4">
 
-    {{-- Encabezado --}}
-    <div class="d-flex flex-wrap justify-content-between
-                align-items-center gap-3 mb-4">
-
-        <div>
-            <h1 class="h3 mb-1">Catálogo de permisos</h1>
-            <p class="text-muted mb-0">
-                Administración de permisos.
-            </p>
+            <div>
+                <h1 class="h3 mb-1">Catálogo de permisos</h1>
+                <p class="text-muted mb-0">
+                    Administración de permisos.
+                </p>
+            </div>
+            @can('permisos.administrar')
+                <button class="btn btn-inelmy" onclick="window.agregarRegistro('#form-permiso', '#formPermisoModal')">
+                    <i class="bi bi-person-plus me-1"></i>
+                    Nuevo permiso
+                </button>
+            @endcan
         </div>
-        @can('permisos.administrar')
-            <button class="btn btn-inelmy" onclick="window.agregarRegistro('#form-permiso', '#formPermisoModal')">
-                <i class="bi bi-person-plus me-1"></i>
-                Nuevo permiso
-            </button>
-        @endcan
-    </div>
-    {{-- Tabla de permisos --}}
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="permisos-table-wrapper">
-                <table id="tabla-permiso" class="display">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                </table>
+        {{-- Tabla de permisos --}}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="permisos-table-wrapper">
+                    <div class="datatable-compacta">
+                        <table id="tabla-permiso" class="display">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -128,6 +131,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
     @vite('resources/js/functions.js')
+    @vite('resources/js/ajax-helpers.js')
     {{-- Inicialización de DataTables --}}
     <script>
 
@@ -358,113 +362,31 @@
         //Función para agregar y actualizar permisos
         $('#form-permiso').submit(function (e) {
             e.preventDefault();
-            const $form = $(this);
             const id = $('#edit-id').val();
             const esEdicion = id > 0;
 
-            const datos = new FormData(this);
-            if (esEdicion) datos.append('_method', 'PUT');
-
-            $.ajax({
+            window.enviarFormulario({
+                $form: $(this),
                 url: esEdicion ? '{{ url('permisos') }}/' + id : '{{ route('permisos.crear') }}',
-                method: 'POST',
-                data: datos,
-                cache: false,
-                contentType: false,
-                processData: false,
-                dataType: 'json',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function () {
-                    Swal.fire({
-                        title: 'Éxito!',
-                        text: esEdicion
-                            ? 'El registro ha sido actualizado correctamente.'
-                            : 'El registro ha sido agregado correctamente.',
-                        icon: 'success'
-                    });
-                    $form[0].reset();
-                    window.limpiarErrores($form);
-                    $('#formPermisoModal').modal('hide');
-                    $('#tabla-permiso').DataTable().ajax.reload();
-                },
-                error: function (xhr) {
-                    window.limpiarErrores($form);
-
-                    // Errores de validación
-                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
-                        $.each(xhr.responseJSON.errors, function (campo, mensajes) {
-                            $form.find(':input').filter(function () { return this.name === campo; })
-                                .addClass('is-invalid');
-                            $form.find('[data-error-for]').filter(function () {
-                                return $(this).attr('data-error-for') === campo;
-                            }).text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                        });
-                        $form.find('.is-invalid').first().trigger('focus');
-                        return;
-                    }
-
-                    // El permiso ya no existe
-                    if (xhr.status === 404) {
-                        Swal.fire({ title: 'Error!', text: 'Permiso no encontrado!', icon: 'error' });
-                        $form[0].reset();
-                        $('#formPermisoModal').modal('hide');
-                        $('#tabla-permiso').DataTable().ajax.reload();
-                        return;
-                    }
-
-                    console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Ocurrió un error al guardar el permiso. Intenta nuevamente.',
-                        icon: 'error'
-                    });
-                }
+                metodo: esEdicion ? 'PUT' : 'POST',
+                modal: '#formPermisoModal',
+                tabla: '#tabla-permiso',
+                textoExito: esEdicion
+                    ? 'El permiso ha sido actualizado correctamente.'
+                    : 'El permiso ha sido agregado correctamente.',
+                mensajes: { 404: 'Permiso no encontrado!' }
             });
         });
 
         $(document).on('click', '.delete-btn', function () {
-            var id = $(this).data('id');
-            var url = '{{ route('permisos.eliminar', ':id') }}'.replace(':id', id);
+            const id = $(this).data('id');
 
-            Swal.fire({
-                title: "¿Estás seguro?",
-                text: "¡Esta acción no se puede revertir!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Sí, eliminar permiso!",
-                cancelButtonText: "No, cancelar!",
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        Swal.fire({
-                            title: "Eliminado!",
-                            text: "El permiso ha sido eliminado.",
-                            icon: "success"
-                        });
-                        $('#tabla-permiso').DataTable().ajax.reload();
-                    },
-                    error: function (xhr) {
-                        var mensajes = {
-                            403: "No tienes permiso para realizar esta acción.",
-                            404: "El permiso ya no existe.",
-                            419: "La sesión expiró. Recarga la página."
-                        };
-                        Swal.fire({
-                            title: "Error!",
-                            text: mensajes[xhr.status] || "No se pudo eliminar el permiso.",
-                            icon: "error"
-                        });
-                    }
-                });
+            window.eliminarRegistro({
+                url: '{{ route('permisos.eliminar', ':id') }}'.replace(':id', id),
+                tabla: '#tabla-permiso',
+                textoBoton: 'Sí, eliminar permiso!',
+                textoExito: 'El permiso ha sido eliminado.',
+                mensajes: { 404: 'El permiso ya no existe.' }
             });
         });
     </script>
