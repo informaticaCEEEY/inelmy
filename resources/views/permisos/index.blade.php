@@ -253,38 +253,12 @@
                         // Eliminar mensajes anteriores.
                         window.limpiarErrores($form);
 
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
-
-                        alert('Ocurrió un error al guardar el permiso. Intenta nuevamente.');
+                        window.manejarErrorAjax(xhr, {
+                            mensajes: {
+                                404: 'El permiso que intentas consultar no existe.'
+                            },
+                            log: 'Error al consultar el permiso'
+                        });
                     }
                 });
             });
@@ -325,35 +299,12 @@
                         // Eliminar mensajes anteriores.
                         window.limpiarErrores($form);
 
-                        // Errores de validación de Laravel.
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-
-                            const errores = xhr.responseJSON.errors;
-
-                            $.each(errores, function (campo, mensajes) {
-
-                                // Encontrar el input por su atributo name.
-                                const $input = $form.find(':input').filter(function () {
-                                    return this.name === campo;
-                                });
-
-                                // Encontrar el contenedor de error correspondiente.
-                                const $contenedor = $form.find('[data-error-for]').filter(function () {
-                                    return $(this).attr('data-error-for') === campo;
-                                });
-
-                                $input.addClass('is-invalid');
-                                $contenedor.text(mensajes[0] ?? 'El valor ingresado no es válido.');
-                            });
-
-                            // Enfocar el primer campo inválido.
-                            $form.find('.is-invalid').first().trigger('focus');
-                            return;
-                        }
-
-                        // Errores distintos de validación.
-                        console.error('Error al guardar permiso:', xhr.responseJSON ?? xhr.responseText);
-                        alert('Ocurrió un error al guardar el permiso. Intenta nuevamente.');
+                        window.manejarErrorAjax(xhr, {
+                            mensajes: {
+                                404: 'El permiso que intentas consultar no existe.'
+                            },
+                            log: 'Error al consultar el permiso'
+                        });
                     }
                 });
             });

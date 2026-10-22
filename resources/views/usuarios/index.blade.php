@@ -542,14 +542,16 @@
                         }
                     },
                     error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
                         window.manejarErrorAjax(xhr, {
-                            $form,
-                            mensajes: { 404: 'Usuario no encontrado!' },
-                            alNoEncontrado: () => {
-                                $form[0].reset();
-                                $('#formUsuarioModal').modal('hide');
-                                $('#tabla-usuario').DataTable().ajax.reload();
-                            }
+                            mensajes: {
+                                404: 'El usuario que intentas consultar no existe.'
+                            },
+                            log: 'Error al consultar el usuario'
                         });
                     }
                 });
@@ -580,14 +582,16 @@
                         }
                     },
                     error: function (xhr) {
+                        const $form = $('#form-usuario');
+
+                        // Eliminar mensajes anteriores.
+                        window.limpiarErrores($form);
+
                         window.manejarErrorAjax(xhr, {
-                            $form,
-                            mensajes: { 404: 'Usuario no encontrado!' },
-                            alNoEncontrado: () => {
-                                $form[0].reset();
-                                $('#formUsuarioModal').modal('hide');
-                                $('#tabla-usuario').DataTable().ajax.reload();
-                            }
+                            mensajes: {
+                                404: 'El usuario que intentas consultar no existe.'
+                            },
+                            log: 'Error al consultar el usuario'
                         });
                     }
                 });

@@ -60,7 +60,7 @@ class PermisoController extends Controller
             'uppercase' => 'Este campo solo permite el uso de mayúsculas.'
         ]);
 
-        $user = Permission::create([
+        $permiso = Permission::create([
             'name' => $request->name
         ]);
 

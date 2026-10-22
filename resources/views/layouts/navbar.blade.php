@@ -25,31 +25,53 @@
                         </a>
                     </li>
                 @endcan
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-card-list"></i>
-                            Catalogos
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
-                                    Usuarios
-                                </a>
-                            </li>
-                            <li>
-                                <a class="nav-link {{ request()->routeIs('permisos.index') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
-                                    Permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}" href="{{ route('roles.index') }}">
-                                    Roles
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                @can('administrar.catalogos')
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-card-list"></i>
+                                Catalogos
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('estados-calificacion.index') ? 'active' : '' }}" href="{{ route('estados-calificacion.index') }}">
+                                        Estados de Calificación
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('estatus-aplicacion.index') ? 'active' : '' }}" href="{{ route('estatus-aplicacion.index') }}">
+                                        Estatus de Aplicación
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('estatus-seccion.index') ? 'active' : '' }}" href="{{ route('estatus-seccion.index') }}">
+                                        Estatus de Sección
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('estatus-version.index') ? 'active' : '' }}" href="{{ route('estatus-version.index') }}">
+                                        Estatus de Versión
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
+                                        Usuarios
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('permisos.index') ? 'active' : '' }}" href="{{ route('permisos.index') }}">
+                                        Permisos
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                                        Roles
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                @endcan
                 {{-- Aplicaciones --}}
                 <li class="nav-item">
                     <a class="nav-link" href="#">Aplicaciones</a>

@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\EstadoCalificacionController;
+use App\Http\Controllers\EstatusAplicacionController;
+use App\Http\Controllers\EstatusSeccionController;
+use App\Http\Controllers\EstatusVersionController;
 use App\Http\Controllers\FiltrosController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\RolController;
@@ -63,10 +67,9 @@ Route::middleware(['auth', 'verified', 'permission:permisos.administrar'])
         Route::post('/', 'store')->name('crear');
         Route::put('/{permiso}', 'update')->name('editar');
         Route::delete('/{permiso}', 'destroy')->name('eliminar');
-        Route::post('/datatable', 'datatable')->name('datatable');
     });
 
-/**** Rutas para Roes ****/
+/**** Rutas para Roles ****/
 Route::middleware(['auth', 'verified', 'permission:roles.administrar'])
     ->prefix('roles')
     ->name('roles.')
@@ -79,4 +82,60 @@ Route::middleware(['auth', 'verified', 'permission:roles.administrar'])
         Route::post('/', 'store')->name('crear');
         Route::put('/{role}', 'update')->name('editar');
         Route::delete('/{role}', 'destroy')->name('eliminar');
+    });
+
+/**** Rutas para Estado Calificación ****/
+Route::middleware(['auth', 'verified', 'permission:administrar.catalogos'])
+    ->prefix('estados-calificacion')
+    ->name('estados-calificacion.')
+    ->controller(EstadoCalificacionController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{estadoCalificacion}', 'update')->name('editar');
+        Route::delete('/{estadoCalificacion}', 'destroy')->name('eliminar');
+    });
+
+/**** Rutas para Estatus Aplicacion ****/
+Route::middleware(['auth', 'verified', 'permission:administrar.catalogos'])
+    ->prefix('estatus-aplicacion')
+    ->name('estatus-aplicacion.')
+    ->controller(EstatusAplicacionController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{estatusAplicacion}', 'update')->name('editar');
+        Route::delete('/{estatusAplicacion}', 'destroy')->name('eliminar');
+    });
+
+/**** Rutas para Estatus Seccion ****/
+Route::middleware(['auth', 'verified', 'permission:administrar.catalogos'])
+    ->prefix('estatus-seccion')
+    ->name('estatus-seccion.')
+    ->controller(EstatusSeccionController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{estatusSeccion}', 'update')->name('editar');
+        Route::delete('/{estatusSeccion}', 'destroy')->name('eliminar');
+    });
+
+/**** Rutas para Estatus Version ****/
+Route::middleware(['auth', 'verified', 'permission:administrar.catalogos'])
+    ->prefix('estatus-version')
+    ->name('estatus-version.')
+    ->controller(EstatusVersionController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{estatusVersion}', 'update')->name('editar');
+        Route::delete('/{estatusVersion}', 'destroy')->name('eliminar');
     });
