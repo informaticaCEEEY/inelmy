@@ -31,4 +31,28 @@ class FiltrosController extends Controller
             'more' => $roles->hasMorePages()
         ]);
     }
+
+    public function permisos(Request $request)
+    {
+        $search = $request->search;
+
+        $query = DB::table('permissions')
+            ->when($search, function ($query) use ($search) {
+                $query->where('permissions.name', 'like', "%{$search}%");
+            })
+            ->select('permissions.id', 'permissions.name as text')
+            ->orderBy('text');
+
+        $permisos = $query->distinct()->paginate(10);
+
+        return response()->json([
+            'permisos' => $permisos->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->text
+                ];
+            }),
+            'more' => $permisos->hasMorePages()
+        ]);
+    }
 }

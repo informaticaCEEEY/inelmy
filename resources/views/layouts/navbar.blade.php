@@ -42,6 +42,11 @@
                                     Permisos
                                 </a>
                             </li>
+                            <li>
+                                <a class="nav-link {{ request()->routeIs('roles.index') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                                    Roles
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

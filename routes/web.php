@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\FiltrosController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,9 +41,15 @@ Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])
     ->name('usuarios.eliminar');
 
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::get('filtros/roles', [FiltrosController::class, 'roles'])->name('filtros.roles');
-});
+    /**** Rutas para Filtros ****/
+Route::middleware(['auth', 'verified'])
+    ->prefix('filtros')
+    ->name('filtros.')
+    ->controller(FiltrosController::class)
+    ->group(function () {
+        Route::get('/permisos', 'permisos')->name('permisos');
+        Route::get('/roles', 'roles')->name('roles');
+    });
 
 /**** Rutas para Permisos ****/
 Route::middleware(['auth', 'verified', 'permission:permisos.administrar'])
@@ -56,5 +63,20 @@ Route::middleware(['auth', 'verified', 'permission:permisos.administrar'])
         Route::post('/', 'store')->name('crear');
         Route::put('/{permiso}', 'update')->name('editar');
         Route::delete('/{permiso}', 'destroy')->name('eliminar');
+        Route::post('/datatable', 'datatable')->name('datatable');
     });
 
+/**** Rutas para Roes ****/
+Route::middleware(['auth', 'verified', 'permission:roles.administrar'])
+    ->prefix('roles')
+    ->name('roles.')
+    ->controller(RolController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{role}/permisos', 'permisosPorRol')->name('permisos');
+        Route::post('/datatable', 'datatable')->name('datatable');
+        Route::post('/buscar', 'getById')->name('buscar');
+        Route::post('/', 'store')->name('crear');
+        Route::put('/{role}', 'update')->name('editar');
+        Route::delete('/{role}', 'destroy')->name('eliminar');
+    });

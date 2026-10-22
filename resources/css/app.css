@@ -217,3 +217,10 @@ body {
 .modal-inelmy .modal-body {
     padding: 1.5rem;
 }
+
+.badge-institucional {
+    background-color: var(--color-institucional) !important;
+    color: #fff;
+    font-family: Panton, sans-serif,Arial, Helvetica;
+    font-weight: bold;
+}
