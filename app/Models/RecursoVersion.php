@@ -16,17 +16,12 @@ class RecursoVersion extends Model
      * @var string
      */
     protected $table = 'recurso_version';
-    protected $fillable = ['recurso_id', 'tipo_recurso_id', 'estatus_version_id',
+    protected $fillable = ['recurso_id', 'estatus_version_id',
         'titulo', 'version', 'url_contenido', 'transcripcion'];
 
     public function recurso(): BelongsTo
     {
         return $this->belongsTo(Recurso::class);
-    }
-
-    public function tipoRecurso(): BelongsTo
-    {
-        return $this->belongsTo(TipoRecurso::class);
     }
 
     public function estatusVersion(): BelongsTo

@@ -48,7 +48,8 @@ class TipoRecursoController extends Controller
     public function store(Request $request)
     {
         $validacion = $request->validate([
-            'nombre' => ['required', 'string', 'max:150', 'unique:'.TipoRecurso::class],
+            'clave' => ['required', 'string', 'max:50', 'unique:'.TipoRecurso::class],
+            'nombre' => ['required', 'string', 'max:150'],
         ],[
             'required' => 'Este campo es requerido.',
             'regex' => 'Este campo tiene caracteres inválidos.',
@@ -61,6 +62,7 @@ class TipoRecursoController extends Controller
         ]);
 
         $estatus = TipoRecurso::create([
+            'clave' => $request->clave,
             'nombre' => $request->nombre
         ]);
 
@@ -75,11 +77,12 @@ class TipoRecursoController extends Controller
     public function update(Request $request, TipoRecurso $tipoRecurso)
     {
         $validated = $request->validate([
-            'nombre' => [
-                'required', 'string', 'max:150',
+            'clave' => [
+                'required', 'string', 'max:50',
                 Rule::unique('tipo_recurso', 'nombre')
                     ->ignore($tipoRecurso),
             ],
+            'nombre' => ['required', 'string', 'max:150'],
         ], [
             'required'    => 'Este campo es requerido.',
             'max'         => 'Este campo no debe exceder los :max caracteres.',

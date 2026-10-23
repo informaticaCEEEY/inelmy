@@ -7,6 +7,7 @@ use App\Http\Controllers\EstatusSeccionController;
 use App\Http\Controllers\EstatusVersionController;
 use App\Http\Controllers\FiltrosController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\RecursoController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\TipoPreguntaController;
 use App\Http\Controllers\TipoRecursoController;
@@ -181,4 +182,17 @@ Route::group(['middleware' => ['auth', 'verified', 'permission:administrar.catal
             Route::put('/{tipoSeccion}', 'update')->name('editar');
             Route::delete('/{tipoSeccion}', 'destroy')->name('eliminar');
         });
+});
+
+
+Route::middleware(['auth', 'verified','permission:recursos.crear',])->group(function () {
+    Route::post('/recursos/crear', [RecursoController::class, 'store'])->name('recursos.crear');
+});
+
+Route::middleware(['auth', 'verified','permission:recursos.editar',])->group(function () {
+    Route::put('/recursos/{usuario}', [RecursoController::class, 'update'])->name('recursos.editar');
+});
+
+Route::middleware(['auth', 'verified','permission:recursos.ver',])->group(function () {
+    Route::post('/recursos/crear', [RecursoController::class, 'store'])->name('recursos.ver');
 });

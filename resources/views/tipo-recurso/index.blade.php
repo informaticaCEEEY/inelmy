@@ -43,6 +43,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Clave</th>
                                     <th>Nombre</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -81,6 +82,18 @@
 
                         <div class="modal-body">
                             <div class="row g-3">
+                                {{-- Clave --}}
+                                <div class="col-12 col-md-6">
+                                    <label for="clave" class="form-label">
+                                        Clave <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input type="text" id="clave" name="clave" class="form-control"
+                                        placeholder="Ingrese la clave" aria-describedby="error-clave" required>
+
+                                    <div id="error-clave" class="invalid-feedback" data-error-for="clave"></div>
+                                </div>
+
                                 {{-- Nombre --}}
                                 <div class="col-12 col-md-6">
                                     <label for="nombre" class="form-label">
@@ -142,6 +155,7 @@
             $('#labelForm').html('Editar');
 
             $('#edit-id').val(tipoRecurso.id);
+            $('#clave').val(tipoRecurso.clave);
             $('#nombre').val(tipoRecurso.nombre);
         }
 
@@ -162,6 +176,7 @@
                 },
                 columns: [
                     { data: "id", name: "id", visible: false, searchable: false },
+                    { data: "clave", name: "clave" },
                     { data: "nombre", name: "nombre" },
                     {
                         data: null, name: 'acciones', orderable: false,  searchable: false,

@@ -15,5 +15,5 @@ class TipoRecurso extends Model
      * @var string
      */
     protected $table = 'tipo_recurso';
-    protected $fillable = ['nombre'];
+    protected $fillable = ['clave', 'nombre'];
 }
