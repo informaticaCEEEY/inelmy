@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 @endpush
 
-@section('title', 'Catálogo de estatus de sección')
+@section('title', 'Catálogo de estatus de versión')
 
 @section('content')
 <div class="container-fluid px-3 px-lg-4 py-4">
@@ -22,9 +22,9 @@
                     align-items-center gap-3 mb-4">
 
             <div>
-                <h1 class="h3 mb-1">Catálogo de estatus de sección</h1>
+                <h1 class="h3 mb-1">Catálogo de estatus de versión</h1>
                 <p class="text-muted mb-0">
-                    Administración de estatus de sección.
+                    Administración de estatus de versión.
                 </p>
             </div>
             @can('administrar.catalogos')

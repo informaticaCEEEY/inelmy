@@ -48,7 +48,7 @@ class EstatusSeccionController extends Controller
     public function store(Request $request)
     {
         $validacion = $request->validate([
-            'nombre' => ['required', 'string', 'unique:'.EstatusSeccion::class],
+            'nombre' => ['required', 'string', 'max:100', 'unique:'.EstatusSeccion::class],
         ],[
             'required' => 'Este campo es requerido.',
             'regex' => 'Este campo tiene caracteres inválidos.',
@@ -76,7 +76,7 @@ class EstatusSeccionController extends Controller
     {
         $validated = $request->validate([
             'nombre' => [
-                'required', 'string', 'max:255',
+                'required', 'string', 'max:100',
                 Rule::unique('estatus_seccion', 'nombre')
                     ->ignore($estatusSeccion),
             ],

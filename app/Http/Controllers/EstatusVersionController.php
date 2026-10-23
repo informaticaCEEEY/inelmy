@@ -48,7 +48,7 @@ class EstatusVersionController extends Controller
     public function store(Request $request)
     {
         $validacion = $request->validate([
-            'nombre' => ['required', 'string', 'unique:'.EstatusVersion::class],
+            'nombre' => ['required', 'string', 'max:100', 'unique:'.EstatusVersion::class],
         ],[
             'required' => 'Este campo es requerido.',
             'regex' => 'Este campo tiene caracteres inválidos.',
@@ -76,7 +76,7 @@ class EstatusVersionController extends Controller
     {
         $validated = $request->validate([
             'nombre' => [
-                'required', 'string', 'max:255',
+                'required', 'string', 'max:100',
                 Rule::unique('estatus_version', 'nombre')
                     ->ignore($estatusVersion),
             ],

@@ -54,6 +54,21 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a class="nav-link {{ request()->routeIs('tipo-pregunta.index') ? 'active' : '' }}" href="{{ route('tipo-pregunta.index') }}">
+                                        Tipo de Pregunta
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('tipo-recurso.index') ? 'active' : '' }}" href="{{ route('tipo-recurso.index') }}">
+                                        Tipo de Recurso
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link {{ request()->routeIs('tipo-seccion.index') ? 'active' : '' }}" href="{{ route('tipo-seccion.index') }}">
+                                        Tipo de Sección
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
                                         Usuarios
                                     </a>
